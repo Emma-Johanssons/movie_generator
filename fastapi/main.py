@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
+from typing import Optional
 
 app = FastAPI()
 load_dotenv(override=True)
@@ -76,7 +77,7 @@ def authenticate_user(username: str, password:str, db:Session):
         return False
     return user
 
-def create_access_token(data:dict, expires_delta: timedelta | None = None):
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
