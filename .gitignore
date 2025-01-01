@@ -1,0 +1,13 @@
+#Backend
+fastapi/venv/
+fastapi/.env
+fastapi/.*env*
+fastapi/.venv
+fastapi/__pycache__/
+fastapi/*.pyc
+fastapi/*.pyo
+
+# Frontend
+react/movie_generator/node_modules/
+react/movie_generator/dist/
+react/movie_generator/build/
