@@ -11,3 +11,5 @@ fastapi/*.pyo
 react/movie_generator/node_modules/
 react/movie_generator/dist/
 react/movie_generator/build/
+
+.venv

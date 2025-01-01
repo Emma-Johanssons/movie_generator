@@ -1,35 +1,33 @@
 # Steg 1: Använd en officiell Python-bild
 FROM python:3.9-slim
 
-# Steg 2: Ställ in arbetskatalogen
+# Steg 2: Sätt arbetskatalogen i containern till /app
 WORKDIR /app
 
-# Steg 3: Uppdatera systemet och installera Python-paket (om pip inte finns)
+# Installera nödvändiga systemberoenden för psycopg2 och andra bibliotek
 RUN apt-get update && apt-get install -y \
-    python3-pip \
     build-essential \
     libpq-dev \
     python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Steg 4: Kopiera requirements.txt och installera beroenden
-COPY requirements.txt /app/
+# Steg 3: Kopiera requirements.txt från backend-mappen och installera beroenden
+COPY ./requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Installera pip och uppgradera pip om det behövs
-RUN python3 -m ensurepip --upgrade && \
-    python3 -m pip install --no-cache-dir --upgrade pip
+# Se till att gunicorn installeras om det inte redan är i requirements.txt
+# Om du vill ange en specifik version av gunicorn, kan du göra det här (ex. gunicorn==20.1.0)
+RUN pip install gunicorn
 
-# Installera beroenden från requirements.txt
-RUN pip install -r /app/requirements.txt
 
-# Steg 5: Installera Uvicorn (och andra beroenden om de inte finns i requirements.txt)
-RUN pip install uvicorn[standard]
+# Kopiera .env-filen till containern
+COPY .env /app/
 
-# Steg 6: Kopiera hela koden från din lokala app
+# Kopiera hela backend-applikationen (från nuvarande mapp till containern)
 COPY . /app/
 
-# Steg 7: Exponera porten
+# Steg 5: Exponera porten som FastAPI kommer att lyssna på
 EXPOSE 8000
 
-# Steg 8: Kör FastAPI med Uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Steg 6: Kör FastAPI med Gunicorn (rätt syntax)
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "main:app"]
