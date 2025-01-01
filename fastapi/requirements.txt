@@ -47,6 +47,7 @@ numpy>=1.21.0,<2.0.0
 openai==1.54.4
 packaging==24.1
 pandas==2.2.3
+passlib[bcrypt]
 parso==0.8.4
 pillow==10.4.0
 platformdirs==4.2.2
@@ -54,7 +55,7 @@ plotly==5.24.1
 prompt_toolkit==3.0.47
 protobuf==5.28.3
 psutil==6.0.0
-psycopg2-binary==2.9.10
+psycopg2==2.9.1
 pure_eval==0.2.3
 pyarrow==18.0.0
 pydantic==2.10.3
@@ -63,6 +64,7 @@ pydeck==0.9.1
 Pygments==2.18.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
+python-jose
 python-multipart==0.0.19
 pytz==2024.2
 PyYAML==6.0.2

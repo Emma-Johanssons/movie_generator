@@ -8,7 +8,7 @@ load_dotenv(override=True)
 db_password = os.getenv("DATABASE_PASSWORD")
 db_name = os.getenv("DATABASE_NAME")
 
-DATABASE_URL = f"postgresql+psycopg2://postgres:{db_password}@localhost:5432/{db_name}"
+DATABASE_URL = f"postgresql+psycopg2://postgres:{db_password}@host.docker.internal:5432/{db_name}"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
