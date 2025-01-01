@@ -19,8 +19,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Om du vill ange en specifik version av gunicorn, kan du göra det här (ex. gunicorn==20.1.0)
 RUN pip install gunicorn
 
-
-# Kopiera .env-filen till containern
+# Kopiera .env-filen till containern om den finns (kan vara valfritt beroende på om du använder Railway's miljövariabler)
 COPY .env /app/
 
 # Kopiera hela backend-applikationen (från nuvarande mapp till containern)
