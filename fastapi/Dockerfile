@@ -28,4 +28,4 @@ COPY ./fastapi /app/fastapi
 EXPOSE 8000
 
 # Steg 5: Kör FastAPI med Gunicorn
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "main:app"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
