@@ -48,7 +48,7 @@ numpy>=1.21.0,<2.0.0
 openai==1.54.4
 packaging==24.1
 pandas==2.2.3
-passlib[bcrypt]
+passlib
 parso==0.8.4
 pillow==10.4.0
 platformdirs==4.2.2
