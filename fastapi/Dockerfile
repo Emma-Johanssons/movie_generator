@@ -15,17 +15,11 @@ RUN apt-get update && apt-get install -y \
 COPY ./requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Se till att uvicorn installeras om det inte redan är i requirements.txt
-RUN pip install uvicorn
-
-# Kopiera .env-filen till containern
-COPY .env /app/
-
-# Kopiera hela backend-applikationen (från nuvarande mapp till containern)
+# Steg 4: Kopiera hela backend-applikationen (inklusive main.py) till containern
 COPY . /app/
 
 # Steg 5: Exponera porten som FastAPI kommer att lyssna på
 EXPOSE 8000
 
-# Steg 6: Kör FastAPI med uvicorn
+# Steg 6: Kör FastAPI med uvicorn (rätt syntax)
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

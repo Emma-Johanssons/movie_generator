@@ -13,3 +13,4 @@ react/movie_generator/dist/
 react/movie_generator/build/
 
 .venv
+.vercel
