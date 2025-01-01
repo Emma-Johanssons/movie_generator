@@ -57,6 +57,10 @@ def create_user(db:Session, user:UserCreate):
     db.commit()
     return "complete"
 
+@app.get("/")
+def read_root():
+    return {"message": "Hello, World!"}
+
 @app.post("/register")
 def register_user(user:UserCreate, db:Session = Depends(get_db)):
     db_user = get_user_by_username(db, username=user.username)
