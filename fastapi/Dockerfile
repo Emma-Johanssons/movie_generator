@@ -11,21 +11,15 @@ RUN apt-get update && apt-get install -y \
     python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Steg 3: Kopiera requirements.txt från den aktuella mappen och installera beroenden
+# Steg 3: Kopiera requirements.txt och installera beroenden
 COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r /app/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Se till att gunicorn installeras om det inte redan är i requirements.txt
-RUN pip install gunicorn
-
-# Kopiera .env-filen till containern om den finns (kan vara valfritt beroende på om du använder Railway's miljövariabler)
-COPY .env /app/
-
-# Kopiera hela backend-applikationen (nu från den aktuella mappen)
-COPY . /app/
+# Kopiera hela backend-applikationen från fastapi/ till containern
+COPY ./fastapi /app/
 
 # Steg 4: Exponera porten som FastAPI kommer att lyssna på
 EXPOSE 8000
 
-# Steg 5: Kör FastAPI med Gunicorn
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "main:app"]
+# Steg 5: Kör FastAPI med Uvicorn (ersätt Gunicorn med Uvicorn)
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
