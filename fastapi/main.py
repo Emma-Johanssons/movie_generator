@@ -23,7 +23,7 @@ origins = [
     "http://localhost:3000",
     "http://localhost",  
     "http://127.0.0.1",
-    "https://movie-generator-i53u.vercel.app/",  
+    "https://movie-generator-i53u-yv48iaocd-emmas-projects-c8b5acd9.vercel.app",  
 ]
 
 app.add_middleware(
