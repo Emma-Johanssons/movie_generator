@@ -10,7 +10,7 @@ function PopularMovies() {
       const token = localStorage.getItem("token");
       try {
         const response = await fetch(
-          "https://movie-generator-ngpw.onrender.com/popular-movies",
+          "https://movie-generator-ngpw.onrender.com/popular-movies", // Din backend-URL
           {
             method: "GET",
             headers: {
@@ -22,7 +22,7 @@ function PopularMovies() {
           throw new Error("Failed to fetch popular movies");
         }
         const data = await response.json();
-        setMovies(data.results); // Sätt filmerna som hämtades från TMDB
+        setMovies(data.results); // Fyll lista med filmer från backend
         setLoading(false);
       } catch (error) {
         setError(error.message);

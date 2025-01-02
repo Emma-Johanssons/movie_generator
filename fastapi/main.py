@@ -11,6 +11,7 @@ from security import authenticate_user, create_access_token, verify_token, is_to
 from crud import get_user_by_username, create_user
 import requests
 import os
+import httpx
 
 app = FastAPI()
 load_dotenv(override=True)
@@ -139,13 +140,11 @@ def get_liked_movies(db: Session = Depends(get_db), token: str = Depends(oauth2_
 TMDB_API_URL = "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1&api_key={api_key}"
 
 @app.get("/popular-movies")
-def get_popular_movies():
-    try:
-        response = requests.get(
-            TMDB_API_URL,
-        )
-        response.raise_for_status()
-        return response.json()  
-    except requests.exceptions.RequestException as e:
-        print(f"Error, {e}")
-        raise HTTPException(status_code=500, detail="Error fetching popular movies")
+async def get_popular_movies():
+     async with httpx.AsyncClient() as client:
+        response = await client.get(TMDB_API_URL)
+        if response.status_code != 200:
+            raise HTTPException(status_code=500, detail="Failed to fetch popular movies")
+
+        data = response.json()
+        return {"results": data["results"]}
