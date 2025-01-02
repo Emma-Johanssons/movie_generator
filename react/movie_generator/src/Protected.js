@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import MovieCard from "./MovieCard";
 
 function ProtectedPage() {
   const [welcomeName, setWelcomeName] = useState("Popcorn Enthusiast");
@@ -50,7 +51,7 @@ function ProtectedPage() {
   return (
     <div>
       <h1>Welcome to your dashboard, {welcomeName}</h1>
-      <p>This is your personal movie generator set up</p>
+      <MovieCard />
       <button onClick={logout}>Log out</button>
     </div>
   );

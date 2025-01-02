@@ -12,6 +12,9 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
 
+    liked_movies = relationship("LikedMovie", back_populates="user")
+
+
 class BlacklistedToken(Base):
     __tablename__= "blacklisted_tokens"
     id = Column(Integer, primary_key=True, index=True)
