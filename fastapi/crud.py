@@ -15,3 +15,5 @@ def create_user(db:Session, user:UserCreate):
     db.commit()
     return db_user
 
+
+

@@ -2,16 +2,19 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from datetime import timedelta
-from models import BlacklistedToken
+from models import BlacklistedToken, User, LikedMovie
 from schemas import UserCreate
 from database import SessionLocal
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from security import authenticate_user, create_access_token, verify_token, is_token_blacklisted, ACCESS_TOKEN_EXPIRE_MINUTES
+from security import authenticate_user, create_access_token, verify_token, is_token_blacklisted, ACCESS_TOKEN_EXPIRE_MINUTES, get_user_from_token
 from crud import get_user_by_username, create_user
+import requests
+import os
 
 app = FastAPI()
 load_dotenv(override=True)
+api_key = os.getenv("API_KEY")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl = "token")
 
@@ -87,3 +90,48 @@ def logout(token:str = Depends(oauth2_scheme), db:Session = Depends(get_db)):
     db.commit()
 
     return{"message": "Logged out successfully, token is blacklisted"}
+
+def store_tmdb_token(db: Session, user_id: int, tmdb_access_token: str):
+    user = db.query(User).filter(User.id == user_id).first()
+    if user:
+        user.tmdb_access_token = tmdb_access_token
+        db.commit()
+    return user
+
+@app.get("/search-movies")
+def search_movies(query: str, page: int = 1, db: Session = Depends(get_db)):
+    if not query:
+        raise HTTPException(status_code=400, detail="Search query is required")
+
+    tmdb_url = f"https://api.themoviedb.org/3/search/movie?api_key={api_key}&query={query}&page={page}"
+    
+    response = requests.get(tmdb_url)
+    if response.status_code != 200:
+        raise HTTPException(status_code=500, detail="Failed to fetch movies from TMDB")
+
+    data = response.json()
+    return {"results": data["results"], "total_pages": data["total_pages"], "current_page": page}
+
+@app.post("/like-movie")
+def like_movie(movie_id: int, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    user = get_user_from_token(token, db)  
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    existing_like = db.query(LikedMovie).filter(LikedMovie.user_id == user.id, LikedMovie.movie_id == movie_id).first()
+    if existing_like:
+        raise HTTPException(status_code=400, detail="Movie already liked")
+
+    new_like = LikedMovie(user_id=user.id, movie_id=movie_id)
+    db.add(new_like)
+    db.commit()
+    return {"message": "Movie liked successfully"}
+
+@app.get("/liked-movies")
+def get_liked_movies(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    user = get_user_from_token(token, db)  # Implement this function to get the user by token
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    liked_movies = db.query(LikedMovie).filter(LikedMovie.user_id == user.id).all()
+    return {"liked_movies": liked_movies}

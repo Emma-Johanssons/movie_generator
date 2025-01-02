@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from database import Base
 from database import engine
 
@@ -19,5 +20,13 @@ class BlacklistedToken(Base):
 
     def __repr__(self):
         return f"<BlacklistedToken token={self.token}>"
+    
+class LikedMovie(Base):
+    __tablename__ = "liked_movies"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    movie_id = Column(Integer)
+
+    user = relationship("User", back_populates="liked_movies")
 
 User.metadata.create_all(bind=engine)

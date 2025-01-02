@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import os
 from typing import Optional
 from fastapi import HTTPException
+from crud import get_user_by_username
 
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -48,3 +49,11 @@ def verify_token(token: str, db:Session):
         return payload
     except JWTError:
         raise HTTPException(status_code=403, detail="Token is invalid or has expired")
+    
+def get_user_from_token(token: str, db: Session):
+    payload = verify_token(token, db)  # Verifierar och avkodar tokenet
+    username: str = payload.get("sub")
+    user = get_user_by_username(db, username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
