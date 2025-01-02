@@ -124,7 +124,7 @@ def verify_token(token: str = Depends(oauth2_scheme), db: Session = Depends(get_
 async def verify_user_token(token:str):
     verify_token(token=token)
     return {"message": "Token is valid"}
-@app.logout("/logout")
+@app.post("/logout")
 def logout(token:str = Depends(oauth2_scheme), db:Session = Depends(get_db)):
     if is_token_blacklisted(db, token):
         raise HTTPException(status_code=400, detail="Token is already blacklisted")
