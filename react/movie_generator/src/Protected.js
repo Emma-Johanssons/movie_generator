@@ -10,7 +10,13 @@ function ProtectedPage() {
       const token = localStorage.getItem("token");
       try {
         const response = await fetch(
-          `https://movie-generator-ngpw.onrender.com/verify-token/${token}`
+          `https://movie-generator-ngpw.onrender.com/verify-token/${token}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         if (!response.ok) {
           throw new Error("Token verification failed");
@@ -25,9 +31,20 @@ function ProtectedPage() {
     verifyToken();
   }, [navigate]);
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    navigate("/");
+  const logout = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      await fetch("https://movie-generator-ngpw.onrender.com/logout", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      localStorage.removeItem("token");
+      navigate("/");
+    } catch (error) {
+      console.log("Error during logout");
+    }
   };
 
   return (

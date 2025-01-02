@@ -20,8 +20,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl = "token")
 
 origins = [
     "http://localhost:3000",
-    "http://localhost",  # Localhost if necessary
-    "http://127.0.0.1",  # Sometimes used instead of localhost
+    "http://localhost",  
+    "http://127.0.0.1",  
 ]
 
 app.add_middleware(
@@ -29,11 +29,9 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*", "Authorization"],
 )
 
-def is_token_blacklisted(db:Session, token:str) -> bool:
-    return db.query(BlacklistedToken).filter(BlacklistedToken.token == token).first() is not None
 
 def get_db():
     db = SessionLocal()
@@ -92,22 +90,41 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 @app.post("/token")
-def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:Session = Depends(get_db)):
-    print(f"Received username: {form_data.username}, password: {form_data.password}")
-    user = authenticate_user(form_data.username, form_data.password, db)
-    if not user:
+def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    # Kontrollera om användarnamn och lösenord är tomma
+    if not form_data.username or not form_data.password:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username and password are required"
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.username, "first_name": user.first_name}, expires_delta=access_token_expires
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
+    try:
+        user = authenticate_user(form_data.username, form_data.password, db)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        # Skapa access token
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": user.username, "first_name": user.first_name},
+            expires_delta=access_token_expires
+        )
+        return {"access_token": access_token, "token_type": "bearer"}
+    except Exception as e:
+        print(f"Error during login: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
-def verify_token(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+def is_token_blacklisted(db:Session, token:str) -> bool:
+    return db.query(BlacklistedToken).filter(BlacklistedToken.token == token).first() is not None
+
+    
+@app.get("/verify-token/{token}")
+async def verify_user_token(token:str, db:Session = Depends(get_db)):
+    verify_token(token=token, db=db)
+    return {"message": "Token is valid"}
+def verify_token(token: str, db:Session):
     try:
         if is_token_blacklisted(db, token):
             raise HTTPException(status_code=401, detail="Token is invalidated")
@@ -119,11 +136,6 @@ def verify_token(token: str = Depends(oauth2_scheme), db: Session = Depends(get_
         return payload
     except JWTError:
         raise HTTPException(status_code=403, detail="Token is invalid or has expired")
-    
-@app.get("/verify-token/{token}")
-async def verify_user_token(token:str):
-    verify_token(token=token)
-    return {"message": "Token is valid"}
 @app.post("/logout")
 def logout(token:str = Depends(oauth2_scheme), db:Session = Depends(get_db)):
     if is_token_blacklisted(db, token):
