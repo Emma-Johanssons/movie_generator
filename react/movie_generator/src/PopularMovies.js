@@ -10,7 +10,7 @@ function PopularMovies() {
       const token = localStorage.getItem("token");
       try {
         const response = await fetch(
-          "https://movie-generator-ngpw.onrender.com/popular-movies", // Din backend endpoint
+          "https://movie-generator-ngpw.onrender.com/popular-movies",
           {
             method: "GET",
             headers: {
