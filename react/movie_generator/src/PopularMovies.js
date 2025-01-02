@@ -37,17 +37,19 @@ function PopularMovies() {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <h2 className="text-2xl font-bold mt-4">Popular Movies</h2>
-      <div className="grid grid-cols-5 gap-4 ">
+    <div className="flex flex-col items-center gap-6">
+      <h2 className="text-2xl sm:text-3xl font-bold mt-4">Popular Movies</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {movies.map((movie) => (
           <div key={movie.id} className="movie-card flex flex-col items-center">
             <img
-              className="h-80  rounded-lg shadow-md"
+              className="h-64 sm:h-80 w-full rounded-lg shadow-md"
               src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
               alt={movie.title}
             />
-            <h3 className=" text-center my-2 ">{movie.title}</h3>
+            <h3 className="text-center my-2 text-sm sm:text-base">
+              {movie.title}
+            </h3>
           </div>
         ))}
       </div>

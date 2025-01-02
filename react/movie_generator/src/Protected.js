@@ -48,11 +48,11 @@ function ProtectedPage() {
   };
 
   return (
-    <div className="min-h-screen min-w-screen bg-[#4E2E54] text-[#F8F4E9]">
-      <h1 className="text-5xl font-bold text-center">
+    <div className="min-h-screen bg-[#4E2E54] text-[#F8F4E9] p-4">
+      <h1 className="text-3xl sm:text-5xl font-bold text-center">
         Welcome to your dashboard, {welcomeName}
       </h1>
-      <div className="flex items-end justify-end min-w-screen -translate-x-10">
+      <div className="flex justify-end mt-4">
         <button
           className="text-[#4E2E54] bg-[#F8F4E9] hover:bg-[#c6c2b9] focus:ring-4 focus:outline-none focus:ring-violet-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
           onClick={logout}
