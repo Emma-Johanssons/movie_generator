@@ -10,7 +10,7 @@ function PopularMovies() {
       const token = localStorage.getItem("token");
       try {
         const response = await fetch(
-          "https://movie-generator-ngpw.onrender.com/popular-movies", // Din backend-URL
+          "https://movie-generator-ngpw.onrender.com/popular-movies",
           {
             method: "GET",
             headers: {
@@ -37,16 +37,17 @@ function PopularMovies() {
   if (error) return <div>{error}</div>;
 
   return (
-    <div>
-      <h2>Popular Movies</h2>
-      <div className="movie-list">
+    <div className="flex flex-col items-center gap-4">
+      <h2 className="text-2xl font-bold mt-4">Popular Movies</h2>
+      <div className="grid grid-cols-5 gap-4 ">
         {movies.map((movie) => (
-          <div key={movie.id} className="movie-card">
+          <div key={movie.id} className="movie-card flex flex-col items-center">
             <img
+              className="h-80  rounded-lg shadow-md"
               src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
               alt={movie.title}
             />
-            <h3>{movie.title}</h3>
+            <h3 className=" text-center my-2 ">{movie.title}</h3>
           </div>
         ))}
       </div>

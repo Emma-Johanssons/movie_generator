@@ -15,7 +15,7 @@ import httpx
 
 app = FastAPI()
 load_dotenv(override=True)
-api_key = os.getenv("API_KEY")
+API_KEY = os.getenv("API_KEY")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl = "token")
 
@@ -104,7 +104,7 @@ def search_movies(query: str, page: int = 1, db: Session = Depends(get_db)):
     if not query:
         raise HTTPException(status_code=400, detail="Search query is required")
 
-    tmdb_url = f"https://api.themoviedb.org/3/search/movie?api_key={api_key}&query={query}&page={page}"
+    tmdb_url = f"https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={query}&page={page}"
     
     response = requests.get(tmdb_url)
     if response.status_code != 200:
@@ -137,7 +137,7 @@ def get_liked_movies(db: Session = Depends(get_db), token: str = Depends(oauth2_
     liked_movies = db.query(LikedMovie).filter(LikedMovie.user_id == user.id).all()
     return {"liked_movies": liked_movies}
 
-TMDB_API_URL = f"https://api.themoviedb.org/3/movie/popular?language=en-US&page=1&api_key={api_key}"
+TMDB_API_URL = f"https://api.themoviedb.org/3/movie/popular?api_key={API_KEY}"
 
 @app.get("/popular-movies")
 async def get_popular_movies():
