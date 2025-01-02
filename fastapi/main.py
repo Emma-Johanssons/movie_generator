@@ -137,7 +137,7 @@ def get_liked_movies(db: Session = Depends(get_db), token: str = Depends(oauth2_
     liked_movies = db.query(LikedMovie).filter(LikedMovie.user_id == user.id).all()
     return {"liked_movies": liked_movies}
 
-TMDB_API_URL = "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1&api_key={api_key}"
+TMDB_API_URL = f"https://api.themoviedb.org/3/movie/popular?language=en-US&page=1&api_key={api_key}"
 
 @app.get("/popular-movies")
 async def get_popular_movies():
