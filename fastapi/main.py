@@ -135,3 +135,17 @@ def get_liked_movies(db: Session = Depends(get_db), token: str = Depends(oauth2_
 
     liked_movies = db.query(LikedMovie).filter(LikedMovie.user_id == user.id).all()
     return {"liked_movies": liked_movies}
+
+TMDB_API_URL = "https://api.themoviedb.org/3/movie/popular"
+
+@app.get("/popular-movies")
+def get_popular_movies():
+    try:
+        response = requests.get(
+            TMDB_API_URL,
+            params={"api_key": api_key, "language": "en-US", "page": 1},
+        )
+        response.raise_for_status()
+        return response.json()  # Returnerar JSON-svaret från TMDB
+    except requests.exceptions.RequestException:
+        raise HTTPException(status_code=500, detail="Error fetching popular movies")
