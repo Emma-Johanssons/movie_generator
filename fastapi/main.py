@@ -12,6 +12,7 @@ from crud import get_user_by_username, create_user
 import os
 import httpx
 
+
 app = FastAPI()
 load_dotenv(override=True)
 API_KEY = os.getenv("API_KEY")
@@ -21,8 +22,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl = "token")
 origins = [
     "http://localhost:3000",
     "http://localhost",  
-    "http://127.0.0.1"
-    "https://movie-generator-i53u-qntn5si8i-emmas-projects-c8b5acd9.vercel.app/",  
+    "http://127.0.0.1",
+    "https://movie-generator-i53u-qntn5si8i-emmas-projects-c8b5acd9.vercel.app",  
 ]
 
 app.add_middleware(
